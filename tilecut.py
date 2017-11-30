@@ -3,12 +3,17 @@ import time
 import re
 import sys
 import collections
+import os
+
+from subprocess import call
 
 input = (-122.094727, 37.390260)
 
 ZOOM = 12
 
 Bounds = collections.namedtuple('Bounds', ['min_x', 'min_y', 'max_x', 'max_y'])
+
+VERSION = 1
 
 def poly2latlng(polyfile):
     """Parse lng, lat co-ordinates from polyfile"""
@@ -38,14 +43,20 @@ def bounding_tiles(coordinates, zoom=ZOOM):
             max_y = tile.y
     return Bounds(min_x, min_y, max_x, max_y)
 
-def tiles(boundingbox, zoom=ZOOM):
-    for x in range(boundingbox.min_x, boundingbox.max_x + 1):
-        for y in range(boundingbox.min_y, boundingbox.max_y + 1):
-
+def tiles(pbf_filename, boundingbox, zoom=ZOOM):
+    with open(pbf_filename) as f:
+        i = 1
+        for x in range(boundingbox.min_x, boundingbox.max_x + 1):
+            for y in range(boundingbox.min_y, boundingbox.max_y + 1):
+                out_dir = "./tiles/" + str(VERSION) + "/" + str(zoom) + "/" + str(y) + "/" + str(x)
+                os.makedirs(out_dir)
+                filename = out_dir + "/" + str(x) + "_" + str(y) + "_" + str(zoom) + ".pbf"
+                call(["osmconvert", "./resources/sf.osm.pbf", "-b=-122.607421875,37.92686760148134,-122.51953125,37.99616267972812", "-o=" + filename])
+                
 
 if __name__ == '__main__':
     print "**Start**"
     start = time.time()
-    coordinates = poly2latlng('./resources/california.poly')
-    b = bounding_tiles(coordinates)
-    print b
+    coordinates = poly2latlng('./resources/sf.poly')
+    bounds = bounding_tiles(coordinates)
+    tiles('resources/sf.osm.pbf', bounds)
