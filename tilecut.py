@@ -7,7 +7,7 @@ import os
 
 from subprocess import call
 
-input = (-122.094727, 37.390260)
+input = (-122.434966, 37.762864)
 
 ZOOM = 12
 
@@ -52,7 +52,10 @@ def tiles(pbf_filename, boundingbox, zoom=ZOOM):
                 os.makedirs(out_dir)
                 filename = out_dir + "/" + str(x) + "_" + str(y) + "_" + str(zoom) + ".pbf"
                 call(["osmconvert", "./resources/sf.osm.pbf", "-b=-122.607421875,37.92686760148134,-122.51953125,37.99616267972812", "-o=" + filename])
-                
+
+
+def lookup_tile(lng, lat, zoom=ZOOM):
+    return mercantile.tile(lng, lat, zoom)
 
 if __name__ == '__main__':
     print "**Start**"
@@ -60,3 +63,6 @@ if __name__ == '__main__':
     coordinates = poly2latlng('./resources/sf.poly')
     bounds = bounding_tiles(coordinates)
     tiles('resources/sf.osm.pbf', bounds)
+    end = time.time()
+    print "Tile generation took ", int(end - start), "seconds"
+    print  "Tile is", lookup_tile(input[0], input[1])
