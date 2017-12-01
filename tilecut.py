@@ -59,7 +59,7 @@ def tiles(pbf_filename, boundingbox, zoom=ZOOM):
 
 def lookup_tile(lng, lat, zoom=ZOOM):
     tile = mercantile.tile(lng, lat, zoom)
-    dir =  "./tiles/" + str(VERSION) + "/" + str(zoom) + "/" + str(tile.y) + "/" + str(tile.x)
+    out_dir =  "./tiles/" + str(VERSION) + "/" + str(zoom) + "/" + str(tile.y) + "/" + str(tile.x)
     filename = out_dir + "/" + str(tile.x) + "_" + str(tile.y) + "_" + str(zoom) + ".pbf"
     return filename
 
